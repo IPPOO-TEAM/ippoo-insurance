@@ -66,8 +66,10 @@ begin
   on conflict (id) do nothing;
 
   -- ---------- BÉNÉFICIAIRES ----------
+  -- id est TEXT (ids KV de type b_… ou uuid castés en text)
   insert into public.beneficiaries (id,user_id,name,relation,birth_date,created_at)
-  select coalesce(nullif(e->>'id',''), 'b_'||md5(e::text)), (split_part(k.key,':',2))::uuid,
+  select coalesce(nullif(e->>'id',''), 'b_'||md5(e::text))::text,
+         (split_part(k.key,':',2))::uuid,
          e->>'name', e->>'relation', nullif(e->>'birthDate','')::date,
          coalesce(nullif(e->>'createdAt','')::timestamptz, now())
   from public.kv_store_752d1a39 k, jsonb_array_elements(k.value) e
