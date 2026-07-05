@@ -291,3 +291,130 @@ export const readBeneficiaries = (uid: string) => readList("beneficiaries", uid,
 export const mirrorDocuments = (uid: string, list: any[]) =>
   mirrorList("documents", uid, list.map((d) => docToRow(uid, d)));
 export const readDocuments = (uid: string) => readList("documents", uid, rowToDoc);
+
+// ---------------------------------------------------------------------
+// PROFILS — 1 ligne / utilisateur (upsert simple, pas de purge)
+// ---------------------------------------------------------------------
+function profileToRow(uid: string, p: any) {
+  return {
+    user_id: uid,
+    name: p.name ?? null,
+    email: p.email ?? null,
+    phone: p.phone ?? null,
+    member_number: p.memberNumber ?? null,
+    ville: p.ville ?? p.city ?? null,
+    profile_type: p.type ?? p.profileType ?? null,
+    secteur: p.secteur ?? null,
+    flux: p.flux ?? null,
+    suspended: !!p.suspended,
+    card_active: !!p.cardActive,
+    card_issued_at: p.cardIssuedAt ?? null,
+    enrolled_by: p.enrolledBy ?? null,
+    enrolled_at: p.enrolledAt ?? null,
+    enrolled_source: p.enrolledSource ?? null,
+    referral_code: p.referralCode ?? null,
+    // La colonne `extra` conserve l'objet profil complet (aucune perte de
+    // champ métier même si le schéma relationnel évolue).
+    extra: p ?? {},
+    updated_at: new Date().toISOString(),
+  };
+}
+export async function mirrorProfile(uid: string, profile: any) {
+  if (!profile || typeof profile !== "object") return;
+  try {
+    const db = svc();
+    const { error } = await db.from("profiles").upsert(profileToRow(uid, profile), { onConflict: "user_id" });
+    if (error) console.log(`[db] mirror profiles: ${error.message}`);
+  } catch (err) {
+    console.log(`[db] mirror profiles skipped: ${err}`);
+  }
+}
+
+// ---------------------------------------------------------------------
+// CONFIG SYSTÈME (back office) — pricing / promos / partners / site
+// Ces données n'appartiennent pas à un utilisateur : upsert global.
+// ---------------------------------------------------------------------
+
+/** Remplace intégralement le contenu d'une table de config (liste). */
+async function replaceTable(table: string, rows: any[], idKey = "id") {
+  try {
+    const db = svc();
+    if (rows.length) {
+      const { error } = await db.from(table).upsert(rows, { onConflict: idKey });
+      if (error) { console.log(`[db] mirror ${table} upsert: ${error.message}`); return; }
+      const ids = rows.map((r) => r[idKey]);
+      await db.from(table).delete().not(idKey, "in", `(${ids.map((i) => `"${i}"`).join(",")})`);
+    } else {
+      // Liste vide = purge complète (config effacée depuis l'admin).
+      await db.from(table).delete().not(idKey, "is", null);
+    }
+  } catch (err) {
+    console.log(`[db] mirror ${table} skipped: ${err}`);
+  }
+}
+
+// pricing : map { productId -> override } → lignes
+export async function mirrorPricing(pricing: Record<string, any>) {
+  const rows = Object.entries(pricing ?? {}).map(([product_id, o]: [string, any]) => ({
+    product_id,
+    premium: typeof o?.premium === "number" ? o.premium : null,
+    frequency: o?.frequency ?? null,
+    delai_carence: o?.delaiCarence ?? null,
+    formules: o?.formules ?? [],
+    garanties: o?.garanties ?? [],
+    extra: o ?? {},
+    updated_at: new Date().toISOString(),
+  }));
+  await replaceTable("pricing", rows, "product_id");
+}
+
+// promos : array → lignes
+export async function mirrorPromos(promos: any[]) {
+  const rows = (promos ?? []).map((p: any, i: number) => ({
+    id: String(p?.id ?? `promo_${i}`),
+    image: p?.image ?? "",
+    alt: p?.alt ?? null,
+    to_url: p?.to ?? null,
+    title: p?.title ?? null,
+    description: p?.description ?? null,
+    cta_label: p?.ctaLabel ?? null,
+    theme: p?.theme ?? "dark",
+    active: p?.active !== false,
+    position: i,
+    updated_at: new Date().toISOString(),
+  }));
+  await replaceTable("promos", rows, "id");
+}
+
+// partners : array → lignes
+export async function mirrorPartners(partners: any[]) {
+  const rows = (partners ?? []).map((p: any, i: number) => ({
+    id: String(p?.id ?? `partner_${i}`),
+    name: p?.name ?? "",
+    type: p?.type ?? null,
+    city: p?.city ?? null,
+    address: p?.address ?? null,
+    phone: p?.phone ?? null,
+    lat: typeof p?.lat === "number" ? p.lat : null,
+    lng: typeof p?.lng === "number" ? p.lng : null,
+    active: p?.active !== false,
+    position: i,
+    extra: p ?? {},
+    updated_at: new Date().toISOString(),
+  }));
+  await replaceTable("partners", rows, "id");
+}
+
+// site_config : singleton (id = 1)
+export async function mirrorSiteConfig(site: any) {
+  try {
+    const db = svc();
+    const { error } = await db.from("site_config").upsert(
+      { id: 1, data: site ?? {}, updated_at: new Date().toISOString() },
+      { onConflict: "id" },
+    );
+    if (error) console.log(`[db] mirror site_config: ${error.message}`);
+  } catch (err) {
+    console.log(`[db] mirror site_config skipped: ${err}`);
+  }
+}

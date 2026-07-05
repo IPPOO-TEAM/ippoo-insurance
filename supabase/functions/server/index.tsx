@@ -17,6 +17,7 @@ import {
   mirrorPayments, readPayments,
   mirrorBeneficiaries, readBeneficiaries,
   mirrorDocuments, readDocuments,
+  mirrorProfile, mirrorPricing, mirrorPromos, mirrorPartners, mirrorSiteConfig,
 } from "./db.tsx";
 import {
   parseBody,
@@ -701,6 +702,12 @@ async function setDocuments(uid: string, list: any[]) {
   await kv.set(k.documents(uid), list);
   void mirrorDocuments(uid, list);
 }
+// Point de passage unique pour la persistance du profil : KV + miroir table
+// `profiles`. Remplace les `setProfile(...)` disséminés.
+async function setProfile(uid: string, profile: any) {
+  await kv.set(k.profile(uid), profile);
+  void mirrorProfile(uid, profile);
+}
 
 function formatXOFInt(n: number) {
   return `${Math.round(n).toLocaleString("fr-FR")} F CFA`;
@@ -733,7 +740,7 @@ async function applyPaymentSideEffects(userId: string, payment: any) {
       let profile = (await kv.get(k.profile(userId))) ?? {};
       if (!profile.memberNumber) profile.memberNumber = await assignMemberNumber(userId);
       profile = { ...profile, cardActive: true, cardIssuedAt: new Date().toISOString() };
-      await kv.set(k.profile(userId), profile);
+      await setProfile(userId, profile);
       await notifyAndDispatch(userId, notifs, {
         typeKey: "payment",
         title: "Carte membre activée",
@@ -965,7 +972,7 @@ app.post(`${PREFIX}/signup`, async (c) => {
     const now = new Date().toISOString();
     const memberNumber = await assignMemberNumber(uid);
     await kv.set(k.emailToUid(email), uid);
-    await kv.set(k.profile(uid), {
+    await setProfile(uid, {
       id: uid,
       email,
       name,
@@ -1095,7 +1102,7 @@ app.get(`${PREFIX}/me`, async (c) => {
   // Backfill memberNumber + email→uid mapping for legacy users
   if (profile && !profile.memberNumber) {
     profile = { ...profile, memberNumber: await assignMemberNumber(user.id) };
-    await kv.set(k.profile(user.id), profile);
+    await setProfile(user.id, profile);
   }
   if (profile?.email) {
     const mapped = await kv.get(k.emailToUid(profile.email));
@@ -1233,7 +1240,7 @@ app.post(`${PREFIX}/profile/avatar`, async (c) => {
     if (upErr) return c.json({ error: `Upload échoué: ${upErr.message}` }, 500);
     const current = (await kv.get(k.profile(user.id))) ?? {};
     const next = { ...current, avatarPath: path, avatarUpdatedAt: new Date().toISOString(), id: user.id };
-    await kv.set(k.profile(user.id), next);
+    await setProfile(user.id, next);
     await audit(user.id, "profile.avatar.upload", { size: file.size, mime: file.type });
     return c.json({ profile: await withAvatarUrl(next) });
   } catch (err) {
@@ -1258,7 +1265,7 @@ app.delete(`${PREFIX}/profile/avatar`, async (c) => {
       if (all.length) await admin.storage.from(AVATAR_BUCKET).remove(all);
     } catch { /* ignore */ }
     const next = { ...current, avatarPath: null, avatarUpdatedAt: new Date().toISOString(), id: user.id };
-    await kv.set(k.profile(user.id), next);
+    await setProfile(user.id, next);
     await audit(user.id, "profile.avatar.delete", {});
     return c.json({ profile: await withAvatarUrl(next) });
   } catch (err) {
@@ -1274,7 +1281,7 @@ app.put(`${PREFIX}/me`, async (c) => {
     if (!parsed.ok) return c.json({ error: parsed.message }, parsed.status);
     const current = (await kv.get(k.profile(user.id))) ?? {};
     const next = { ...current, ...parsed.data, id: user.id };
-    await kv.set(k.profile(user.id), next);
+    await setProfile(user.id, next);
     return c.json({ profile: next });
   } catch (err) {
     console.log(`Profile update error for ${user.id}: ${err}`);
@@ -3451,7 +3458,7 @@ app.post(`${PREFIX}/admin/member/:uid/suspend`, async (c) => {
     p.suspension = suspended
       ? { reason, by: r.admin.username, at: new Date().toISOString() }
       : null;
-    await kv.set(k.profile(uid), p);
+    await setProfile(uid, p);
     await audit(uid, "admin.member.suspend", { suspended, by: r.admin.username, reason: reason || undefined });
     await adminAudit(c, r.admin, "member.suspend", { uid, suspended, reason: reason || undefined });
     return c.json({ ok: true, suspended, suspension: p.suspension });
@@ -3793,6 +3800,7 @@ app.put(`${PREFIX}/admin/site`, async (c) => {
       if (typeof body?.[key] === "string") next[key] = body[key].slice(0, 600);
     }
     await kv.set(k.site(), next);
+    void mirrorSiteConfig(next);
     await audit(`admin:${r.admin.username}`, "admin.site.update", { count: Object.keys(body ?? {}).length });
     await adminAudit(c, r.admin, "site.update", { count: Object.keys(body ?? {}).length });
     return c.json({ ok: true, site: next });
@@ -3858,6 +3866,7 @@ app.put(`${PREFIX}/admin/partners`, async (c) => {
     });
     if (errors.length > 0) return c.json({ error: "Validation échouée", errors }, 400);
     await kv.set(k.partners(), partners);
+    void mirrorPartners(partners);
     await audit(`admin:${r.admin.username}`, "admin.partners.update", { count: partners.length });
     await adminAudit(c, r.admin, "partners.update", { count: partners.length });
     return c.json({ ok: true, partners });
@@ -3920,6 +3929,7 @@ app.put(`${PREFIX}/admin/promos`, async (c) => {
     });
     if (errors.length > 0) return c.json({ error: "Validation échouée", errors }, 400);
     await kv.set(k.promos(), promos);
+    void mirrorPromos(promos);
     await audit(`admin:${r.admin.username}`, "admin.promos.update", { count: promos.length });
     await adminAudit(c, r.admin, "promos.update", { count: promos.length });
     return c.json({ ok: true, promos });
@@ -4004,6 +4014,7 @@ app.put(`${PREFIX}/admin/pricing`, async (c) => {
     }
 
     await kv.set(k.pricing(), clean);
+    void mirrorPricing(clean);
     await audit(`admin:${r.admin.username}`, "admin.pricing.update", { count: Object.keys(clean).length });
     await adminAudit(c, r.admin, "pricing.update", { count: Object.keys(clean).length });
     return c.json({ ok: true, pricing: clean });
@@ -4785,7 +4796,7 @@ app.post(`${PREFIX}/admin/dev/seed-demo`, async (c) => {
       uid = data.user!.id;
       const memberNumber = await assignMemberNumber(uid);
       await kv.set(k.emailToUid(email), uid);
-      await kv.set(k.profile(uid), {
+      await setProfile(uid, {
         id: uid, email, name: "Demo Client", phone: "22912345678", memberNumber,
         createdAt: new Date().toISOString(), type: "particulier",
         firstName: "Demo", lastName: "Client", gender: "M",
@@ -6111,7 +6122,7 @@ app.patch(`${PREFIX}/agent/customer/:uid/profile`, async (c) => {
     }
     if (!Object.keys(patch).length) return c.json({ error: "Aucun champ à mettre à jour" }, 400);
     const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
-    await kv.set(k.profile(uid), next);
+    await setProfile(uid, next);
     await audit(uid, "agent.profile.update", { by: r.agent.matricule, fields: Object.keys(patch) });
     return c.json({ profile: next });
   } catch (err) {
@@ -6638,7 +6649,7 @@ app.patch(`${PREFIX}/admin/members/:userId/enroller`, async (c) => {
       nextUid = ownerUid;
     }
     const now = new Date().toISOString();
-    await kv.set(k.profile(userId), {
+    await setProfile(userId, {
       ...profile,
       enrolledBy: nextMatricule,
       enrolledByUid: nextUid,
@@ -7031,7 +7042,7 @@ app.post(`${PREFIX}/agent/clients`, async (c) => {
     const now = new Date().toISOString();
     const memberNumber = await assignMemberNumber(uid);
     await kv.set(k.emailToUid(email), uid);
-    await kv.set(k.profile(uid), {
+    await setProfile(uid, {
       id: uid,
       email,
       name,
@@ -7678,7 +7689,7 @@ app.post(`${PREFIX}/agent/kyc/:userId/:kycId/decision`, async (c) => {
     await kv.del(k.kycLock(userId, kycId)).catch(() => {});
     if (decision === "valide") {
       const profile = ((await kv.get(k.profile(userId))) ?? {}) as any;
-      await kv.set(k.profile(userId), { ...profile, kycVerified: true, kycVerifiedAt: decided.decidedAt });
+      await setProfile(userId, { ...profile, kycVerified: true, kycVerifiedAt: decided.decidedAt });
     }
     const notifs = ((await kv.get(k.notifications(userId))) ?? []) as any[];
     const label = decision === "valide" ? "validée" : "rejetée";
@@ -7780,7 +7791,7 @@ app.post(`${PREFIX}/admin/kyc/:userId/:kycId/decision`, async (c) => {
     await kv.set(k.kyc(userId), { current: decided, history: bundle.history });
     if (decision === "valide") {
       const profile = ((await kv.get(k.profile(userId))) ?? {}) as any;
-      await kv.set(k.profile(userId), { ...profile, kycVerified: true, kycVerifiedAt: decided.decidedAt });
+      await setProfile(userId, { ...profile, kycVerified: true, kycVerifiedAt: decided.decidedAt });
     }
     const notifs = ((await kv.get(k.notifications(userId))) ?? []) as any[];
     const label = decision === "valide" ? "validée" : "rejetée";
@@ -9774,4 +9785,5 @@ app.all("*", (c) => {
 // rev: 2026-06-27-07 (OFFRES ÉDITABLES : PUT /admin/pricing accepte désormais les champs d'offre (name, shortName, category, icon, color, soft, image, desc, perks[], hidden, added) → édition complète des offres + création de nouvelles formules depuis le back office, diffusées sur la souscription/devis/PDF. Import/export JSON du catalogue côté admin.)
 // rev: 2026-06-27-08 (SCHEMA FINAL : migration 0003_realtime_rls_all_tables.sql — toutes les tables créées/reconfigurées, RLS forcé sur TOUTES, politiques SELECT propre utilisateur pour les tables user_id, lecture anon pour config publique, Realtime FULL sur notifications/messages/contracts/claims/payments/pricing/promos/partners/site_config. Vérification intégrée.)
 // rev: 2026-07-05-01 (SÉPARATION INSTANCES : db.tsx utilise IPPOO_DB_URL + IPPOO_DB_SERVICE_KEY (instance auto-hébergée) séparés de SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (instance Figma/KV). Fallback sur SUPABASE_URL si IPPOO_DB_URL absent. Corrige la situation où les miroirs tables échouaient silencieusement car les deux instances étaient confondues.)
+// rev: 2026-07-05-02 (MIROIR COMPLET : ajout du miroir tables pour profiles (setProfile centralise les 15 écritures) + config back office pricing/promos/partners/site_config (mirrorPricing/Promos/Partners/SiteConfig câblés sur les PUT admin). Toutes les données atteignent désormais leur table dédiée, plus seulement le KV.)
 Deno.serve(app.fetch);
