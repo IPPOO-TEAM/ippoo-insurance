@@ -418,7 +418,11 @@ export function InscriptionPage() {
             couverture: form.couverture,
             couvertureAutre: form.couvertureAutre,
             formule: form.formule,
-            beneficiaires: form.beneficiaires,
+            beneficiaires: form.beneficiaires.map((b) => ({
+              name: b.nom,
+              relation: b.lien,
+              birthDate: b.age ? b.age : undefined,  // âge en années, conservé tel quel
+            })),
             documents: form.documents,
             documentAutre: form.documentAutre,
           },
