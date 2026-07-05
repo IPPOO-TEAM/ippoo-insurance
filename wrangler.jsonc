@@ -1,0 +1,18 @@
+{
+  // Configuration de déploiement Cloudflare Workers (Static Assets / SPA).
+  // Le front est buildé par Vite dans `dist/`, puis servi en SPA.
+  // Corrige les deux erreurs du log :
+  //   1) « assets property missing required directory » → assets.directory=dist
+  //   2) « No projects matched the filters » → build.command sans --filter workspace
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ippoo-insurance",
+  "compatibility_date": "2026-06-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "dist",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

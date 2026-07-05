@@ -1,0 +1,83 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+@import './dark.css';
+
+/* ---- Global polish ---- */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { overscroll-behavior-y: contain; }
+button, a, [role="button"], [tabindex] { -webkit-tap-highlight-color: transparent; }
+@media (hover: none) {
+  button:hover, a:hover { transition: none; }
+}
+:focus-visible { outline: 2px solid #FF3B57; outline-offset: 2px; border-radius: 6px; }
+
+/* Subtle in-view fade for cards using class `.ippoo-fade-in` */
+@keyframes ippoo-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ippoo-fade-in { animation: ippoo-fade-in 0.35s ease both; }
+
+/* ---- Gradient landing-page titles ---- */
+/* Applique un dégradé multicolore animé sur les grands titres de la vitrine.
+ * Le dégradé est plus large que le texte et défile en boucle pour un effet
+ * vivant ; il se fige si l'utilisateur préfère réduire les animations. */
+.gradient-title {
+  background: linear-gradient(
+    90deg,
+    #FF3B57 0%,
+    #FF4FAE 22%,
+    #8A4BFF 42%,
+    #2A6BFF 60%,
+    #16B26A 80%,
+    #FFC419 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradient-title-shift 8s ease-in-out infinite;
+}
+@keyframes gradient-title-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gradient-title { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .ippoo-fade-in { animation: none; }
+}
+
+/* ---- Fonds de page colorés (vitrine publique) ----
+ * Évite le blanc dominant : un dégradé doux aux couleurs de la marque
+ * (chaleureux/africain) sert de toile de fond. Les cartes blanches posées
+ * dessus ressortent mieux. Variantes pour assortir l'ambiance des pages. */
+.ippoo-page-bg {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,196,25,0.16) 0%, transparent 42%),
+    radial-gradient(circle at 88% 6%, rgba(255,79,174,0.16) 0%, transparent 46%),
+    radial-gradient(circle at 78% 92%, rgba(42,107,255,0.14) 0%, transparent 52%),
+    radial-gradient(circle at 18% 96%, rgba(22,178,106,0.14) 0%, transparent 50%),
+    linear-gradient(180deg, #FFF7EE 0%, #FBF6FF 50%, #F1F7FF 100%);
+  background-attachment: fixed;
+}
+/* Variante chaude (santé, maternité, marchandises…) */
+.ippoo-page-bg-warm {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255,122,0,0.18) 0%, transparent 45%),
+    radial-gradient(circle at 85% 12%, rgba(255,59,87,0.16) 0%, transparent 48%),
+    linear-gradient(180deg, #FFF6EC 0%, #FFF1F3 100%);
+  background-attachment: fixed;
+}
+/* Variante fraîche (transport, retraite, juridique…) */
+.ippoo-page-bg-cool {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(42,107,255,0.16) 0%, transparent 46%),
+    radial-gradient(circle at 85% 12%, rgba(22,178,106,0.16) 0%, transparent 48%),
+    linear-gradient(180deg, #EEF5FF 0%, #EEFBF3 100%);
+  background-attachment: fixed;
+}

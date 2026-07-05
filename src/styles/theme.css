@@ -1,0 +1,392 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #0B6E4F;
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* IPPOO Brand Colors — vivid */
+  --ippoo-green: #16B26A;
+  --ippoo-green-deep: #0B6E4F;
+  --ippoo-green-light: #DBFBE7;
+  --ippoo-blue: #2A6BFF;
+  --ippoo-blue-light: #DDE7FF;
+  --ippoo-red: #FF3B57;
+  --ippoo-red-light: #FFDDE2;
+  --ippoo-orange: #FF7A00;
+  --ippoo-orange-light: #FFE8D1;
+  --ippoo-pink: #FF4FAE;
+  --ippoo-pink-light: #FFDCEE;
+  --ippoo-yellow: #FFC419;
+  --ippoo-yellow-light: #FFF2BF;
+  --ippoo-purple: #8A4BFF;
+  --ippoo-purple-light: #ECE0FF;
+  --ippoo-dark: #0E1320;
+  --ippoo-gray: #F5F7FB;
+
+  /* Semantic IPPOO surface/text/border tokens. Components should prefer these
+     over hardcoded hex so dark mode flips correctly via .ippoo-dark. */
+  --ippoo-surface: #FFFFFF;
+  --ippoo-surface-2: #F5F6FA;
+  --ippoo-surface-inverted: #0E1320;
+  --ippoo-text: #0E1320;
+  --ippoo-text-muted: #666666;
+  --ippoo-text-subtle: #999999;
+  --ippoo-text-on-dark: #FFFFFF;
+  --ippoo-border: rgba(0, 0, 0, 0.05);
+  --ippoo-border-strong: rgba(0, 0, 0, 0.10);
+  --ippoo-hover: rgba(0, 0, 0, 0.05);
+
+  /* === Native app design tokens (8pt grid, flat semantic) === */
+  /* Spacing scale — use these everywhere instead of ad-hoc values */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Native radii */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  /* Native elevation — single layered shadow, no double border+shadow */
+  --elev-0: none;
+  --elev-1: 0 1px 2px rgba(14, 19, 32, 0.04), 0 1px 1px rgba(14, 19, 32, 0.03);
+  --elev-2: 0 4px 12px rgba(14, 19, 32, 0.06);
+  --elev-3: 0 12px 32px -8px rgba(14, 19, 32, 0.12);
+  --elev-nav: 0 -1px 0 rgba(14, 19, 32, 0.06);
+
+  /* Flat semantic surfaces (no gradients) */
+  --surface-app: #F2F3F7;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-grouped: #F7F8FA;
+  --surface-sunken: #ECEEF2;
+
+  --line-hairline: rgba(14, 19, 32, 0.06);
+  --line-strong: rgba(14, 19, 32, 0.10);
+
+  /* Flat accent (single hue, no gradient) */
+  --accent-primary: #FF3B57;
+  --accent-primary-pressed: #E62E48;
+  --accent-on-primary: #FFFFFF;
+
+  /* Semantic states */
+  --state-success: #16A34A;
+  --state-success-bg: #DCFCE7;
+  --state-warning: #D97706;
+  --state-warning-bg: #FEF3C7;
+  --state-danger: #DC2626;
+  --state-danger-bg: #FEE2E2;
+  --state-info: #2563EB;
+  --state-info-bg: #DBEAFE;
+
+  /* Native nav heights */
+  --nav-top-h: 48px;
+  --nav-bottom-h: 56px;
+
+  /* Native motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 320ms;
+
+  /* === Native typography === */
+  --font-native: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Roboto", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Roboto", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* iOS-inspired type scale */
+  --type-caption2: 11px;   /* line-height 13 */
+  --type-caption1: 12px;   /* line-height 16 */
+  --type-footnote: 13px;   /* line-height 18 */
+  --type-subhead: 14px;    /* line-height 20 */
+  --type-callout: 15px;    /* line-height 21 */
+  --type-body: 16px;       /* line-height 22 */
+  --type-headline: 17px;   /* line-height 22, weight 600 */
+  --type-title3: 20px;     /* line-height 25 */
+  --type-title2: 22px;     /* line-height 28 */
+  --type-title1: 28px;     /* line-height 34 */
+  --type-largeTitle: 34px; /* line-height 41 */
+
+  /* Restricted weight scale — native systems use only these */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Tightening for display sizes */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-loose: 0.01em;
+}
+
+.ippoo-dark {
+  --surface-app: #0A0D14;
+  --surface-card: #161B2A;
+  --surface-elevated: #1B2233;
+  --surface-grouped: #11151F;
+  --surface-sunken: #0A0D14;
+  --line-hairline: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.12);
+}
+
+/* Dark mode for the IPPOO app shell. The class is added to <html> by
+   ThemeContext when the user selects dark theme. Only the semantic tokens
+   below are flipped — brand accent colors stay identical. */
+.ippoo-dark {
+  --ippoo-surface: #161B2A;
+  --ippoo-surface-2: #0E1320;
+  --ippoo-surface-inverted: #FFFFFF;
+  --ippoo-text: #F1F3F8;
+  --ippoo-text-muted: #9BA3B4;
+  --ippoo-text-subtle: #6E7588;
+  --ippoo-text-on-dark: #FFFFFF;
+  --ippoo-border: rgba(255, 255, 255, 0.06);
+  --ippoo-border-strong: rgba(255, 255, 255, 0.12);
+  --ippoo-hover: rgba(255, 255, 255, 0.06);
+  --ippoo-red-light: #4A1A22;
+  --ippoo-blue-light: #14253E;
+  --ippoo-green-light: #0F3A22;
+  --ippoo-orange-light: #3E2410;
+  --ippoo-pink-light: #3F1A2E;
+  --ippoo-yellow-light: #3D330B;
+  --ippoo-purple-light: #25153F;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* IPPOO Brand */
+  --color-ippoo-green: var(--ippoo-green);
+  --color-ippoo-green-deep: var(--ippoo-green-deep);
+  --color-ippoo-green-light: var(--ippoo-green-light);
+  --color-ippoo-blue: var(--ippoo-blue);
+  --color-ippoo-blue-light: var(--ippoo-blue-light);
+  --color-ippoo-red: var(--ippoo-red);
+  --color-ippoo-red-light: var(--ippoo-red-light);
+  --color-ippoo-orange: var(--ippoo-orange);
+  --color-ippoo-orange-light: var(--ippoo-orange-light);
+  --color-ippoo-pink: var(--ippoo-pink);
+  --color-ippoo-pink-light: var(--ippoo-pink-light);
+  --color-ippoo-yellow: var(--ippoo-yellow);
+  --color-ippoo-yellow-light: var(--ippoo-yellow-light);
+  --color-ippoo-purple: var(--ippoo-purple);
+  --color-ippoo-purple-light: var(--ippoo-purple-light);
+  --color-ippoo-dark: var(--ippoo-dark);
+  --color-ippoo-gray: var(--ippoo-gray);
+  --color-ippoo-surface: var(--ippoo-surface);
+  --color-ippoo-surface-2: var(--ippoo-surface-2);
+  --color-ippoo-surface-inverted: var(--ippoo-surface-inverted);
+  --color-ippoo-text: var(--ippoo-text);
+  --color-ippoo-text-muted: var(--ippoo-text-muted);
+  --color-ippoo-text-subtle: var(--ippoo-text-subtle);
+  --color-ippoo-text-on-dark: var(--ippoo-text-on-dark);
+  --color-ippoo-border: var(--ippoo-border);
+  --color-ippoo-border-strong: var(--ippoo-border-strong);
+  --color-ippoo-hover: var(--ippoo-hover);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: var(--type-body);
+    line-height: 1.4;
+    color: var(--ippoo-text);
+  }
+
+  /* Native type utilities — opt-in classes, do not override existing Tailwind */
+  .t-largeTitle { font-family: var(--font-display); font-size: var(--type-largeTitle); line-height: 1.21; font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); }
+  .t-title1     { font-family: var(--font-display); font-size: var(--type-title1);     line-height: 1.21; font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); }
+  .t-title2     { font-size: var(--type-title2);     line-height: 1.27; font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
+  .t-title3     { font-size: var(--type-title3);     line-height: 1.25; font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
+  .t-headline   { font-size: var(--type-headline);   line-height: 1.29; font-weight: var(--weight-semibold); }
+  .t-body       { font-size: var(--type-body);       line-height: 1.38; font-weight: var(--weight-regular); }
+  .t-body-em    { font-size: var(--type-body);       line-height: 1.38; font-weight: var(--weight-semibold); }
+  .t-callout    { font-size: var(--type-callout);    line-height: 1.4;  font-weight: var(--weight-regular); }
+  .t-subhead    { font-size: var(--type-subhead);    line-height: 1.43; font-weight: var(--weight-regular); }
+  .t-footnote   { font-size: var(--type-footnote);   line-height: 1.38; font-weight: var(--weight-regular); }
+  .t-caption    { font-size: var(--type-caption1);   line-height: 1.33; font-weight: var(--weight-regular); }
+  .t-caption-em { font-size: var(--type-caption1);   line-height: 1.33; font-weight: var(--weight-semibold); letter-spacing: 0.02em; text-transform: uppercase; }
+  .t-mono       { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .t-num        { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .t-muted      { color: var(--ippoo-text-muted); }
+  .t-subtle     { color: var(--ippoo-text-subtle); }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

@@ -1,0 +1,87 @@
+/* Scoped dark mode for /espace-client — affects only descendants of .ippoo-dark */
+.ippoo-dark { color-scheme: dark; }
+
+.ippoo-dark .bg-white { background-color: #1a1f2e !important; }
+.ippoo-dark .bg-\[\#F5F6FA\] { background-color: #0E1320 !important; }
+.ippoo-dark .bg-\[\#F9FAFC\] { background-color: #151a28 !important; }
+.ippoo-dark .bg-\[\#F0F1F5\] { background-color: #232938 !important; }
+
+.ippoo-dark,
+.ippoo-dark p,
+.ippoo-dark h1,
+.ippoo-dark h2,
+.ippoo-dark h3,
+.ippoo-dark span,
+.ippoo-dark label,
+.ippoo-dark li,
+.ippoo-dark a { color: #E8EAF0; }
+
+.ippoo-dark .text-\[\#666\] { color: #9AA0AE !important; }
+.ippoo-dark .text-\[\#555\] { color: #B0B6C4 !important; }
+.ippoo-dark .text-\[\#888\] { color: #8A91A1 !important; }
+.ippoo-dark .text-\[\#999\] { color: #7B8294 !important; }
+.ippoo-dark .text-\[\#333\] { color: #D7DAE3 !important; }
+.ippoo-dark .text-\[\#111\] { color: #E8EAF0 !important; }
+
+.ippoo-dark .border-black\/5 { border-color: rgba(255,255,255,0.06) !important; }
+.ippoo-dark .border-black\/10 { border-color: rgba(255,255,255,0.10) !important; }
+.ippoo-dark .border-black\/20 { border-color: rgba(255,255,255,0.18) !important; }
+
+.ippoo-dark .hover\:bg-black\/5:hover { background-color: rgba(255,255,255,0.06) !important; }
+.ippoo-dark .bg-black\/5 { background-color: rgba(255,255,255,0.06) !important; }
+
+.ippoo-dark input,
+.ippoo-dark select,
+.ippoo-dark textarea {
+  background-color: #232938;
+  color: #E8EAF0;
+  border-color: rgba(255,255,255,0.10);
+}
+.ippoo-dark input::placeholder,
+.ippoo-dark textarea::placeholder { color: #7B8294; }
+
+.ippoo-dark kbd { background-color: #232938; color: #E8EAF0; border-color: rgba(255,255,255,0.15); }
+
+/* Soft pastel backgrounds used throughout pages — tone them down for dark mode. */
+.ippoo-dark .bg-\[\#FFE2E7\] { background-color: #2a1a20 !important; }
+.ippoo-dark .bg-\[\#FFF1D9\] { background-color: #2a2218 !important; }
+.ippoo-dark .bg-\[\#FFF7E6\] { background-color: #2a261c !important; }
+.ippoo-dark .bg-\[\#FFF8F2\] { background-color: #1a1f2e !important; }
+.ippoo-dark .bg-\[\#FFDDE2\] { background-color: #2a1c20 !important; }
+.ippoo-dark .bg-\[\#DDE7FF\] { background-color: #1c2238 !important; }
+.ippoo-dark .bg-\[\#EFE3FF\] { background-color: #221c2e !important; }
+.ippoo-dark .bg-\[\#DBFBE7\] { background-color: #182a20 !important; }
+.ippoo-dark .bg-\[\#FAF7F2\] { background-color: #1a1f2e !important; }
+.ippoo-dark .bg-\[\#FFE8D1\] { background-color: #2a221a !important; }
+.ippoo-dark .bg-\[\#FFDCEE\] { background-color: #2a1c25 !important; }
+
+/* Pastel text accents stay readable. */
+.ippoo-dark .text-\[\#0F7A47\] { color: #4FD69A !important; }
+.ippoo-dark .text-\[\#C0263A\] { color: #FF7A8C !important; }
+.ippoo-dark .text-\[\#2A6BFF\] { color: #7AA0FF !important; }
+.ippoo-dark .text-\[\#8A4BFF\] { color: #C2A0FF !important; }
+.ippoo-dark .text-\[\#0E1320\] { color: #E8EAF0 !important; }
+
+/* Subtle shadows are invisible in dark — replace with a faint glow. */
+.ippoo-dark .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.5) !important; }
+.ippoo-dark .shadow { box-shadow: 0 4px 12px rgba(0,0,0,0.55) !important; }
+.ippoo-dark .shadow-xl { box-shadow: 0 24px 48px -16px rgba(0,0,0,0.7) !important; }
+
+/* Scrollbar */
+.ippoo-dark ::-webkit-scrollbar { width: 10px; height: 10px; }
+.ippoo-dark ::-webkit-scrollbar-track { background: #0E1320; }
+.ippoo-dark ::-webkit-scrollbar-thumb { background: #2b3245; border-radius: 8px; }
+.ippoo-dark ::-webkit-scrollbar-thumb:hover { background: #3a4258; }
+
+/* Respect reduced motion: disable animated spinners + transitions for users who ask for it. */
+@media (prefers-reduced-motion: reduce) {
+  .ippoo-dark *, .ippoo-dark *::before, .ippoo-dark *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Mobile: kill the iOS tap highlight on interactive elements. */
+.ippoo-dark button, .ippoo-dark a, .ippoo-dark [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
