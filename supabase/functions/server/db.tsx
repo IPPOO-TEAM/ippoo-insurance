@@ -13,6 +13,12 @@
 // =====================================================================
 import { createClient } from "jsr:@supabase/supabase-js@2.49.8";
 
+// -----------------------------------------------------------------------
+// INSTANCE UNIQUE : Supabase auto-hébergée IPPOO ASSURANCE
+// SUPABASE_URL = https://insurancedatabase.ippoo-aptdc.com
+// SUPABASE_SERVICE_ROLE_KEY = SERVICE_SUPABASESERVICE_KEY du fichier env
+// Toutes les tables (normalisées + kv_store_752d1a39) sont sur cette instance.
+// -----------------------------------------------------------------------
 const svc = () =>
   createClient(
     Deno.env.get("SUPABASE_URL")!,

@@ -1,15 +1,12 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { projectId, publicAnonKey } from "../../../utils/supabase/info";
 
-// Connexion surchargeable par variables d'env Vite (sans toucher au fichier
-// autogénéré utils/supabase/info). Pour pointer vers l'instance auto-hébergée
-// IPPOO, définir au build/déploiement :
-//   VITE_SUPABASE_URL=https://insurancedatabase.ippoo-aptdc.com
-//   VITE_SUPABASE_ANON_KEY=<anon key de l'instance>
-// À défaut, on retombe sur l'instance managée par défaut.
-const ENV: Record<string, string | undefined> = (import.meta as any).env ?? {};
-export const SUPABASE_URL = (ENV.VITE_SUPABASE_URL?.trim()) || `https://${projectId}.supabase.co`;
-export const SUPABASE_ANON_KEY = (ENV.VITE_SUPABASE_ANON_KEY?.trim()) || publicAnonKey;
+// ============================================================
+// INSTANCE UNIQUE : Supabase auto-hébergée IPPOO ASSURANCE
+// Toute la data passe par https://insurancedatabase.ippoo-aptdc.com
+// Aucune autre instance Supabase n'est utilisée.
+// ============================================================
+export const SUPABASE_URL = "https://insurancedatabase.ippoo-aptdc.com";
+export const SUPABASE_ANON_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc4MjM5MDg0MCwiZXhwIjo0OTM4MDY0NDQwLCJyb2xlIjoiYW5vbiJ9.t3t_OR7_WbH2wBNc5eh1UQ7LO17hrggQCzz3HsQ7B2g";
 
 let client: SupabaseClient | null = null;
 
